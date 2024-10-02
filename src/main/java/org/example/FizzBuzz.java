@@ -6,27 +6,35 @@ import java.util.List;
 
 public class FizzBuzz {
 
-    private final List<Integer> numbers;
-    private final LinkedList<String> queue;
+    private List<Integer> numbers;
+    private LinkedList<String> queue;
+    private final int n =15;
 
     public FizzBuzz(List<Integer> numbers) {
         this.numbers = numbers;
         this.queue = new LinkedList<>();
     }
 
-    public void fizz() throws InterruptedException {
+    public synchronized void fizz() {
         for (int num : numbers) {
             if (num % 3 == 0 && num % 5 != 0) {
                 queue.add("fizz");
+                System.out.println("fizz test");
                 notifyAll();
             }
             else {
-                wait();
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void buzz() throws InterruptedException {
+    public synchronized void buzz()  {
         for (int num : numbers) {
             if (num % 5 == 0 && num % 3 != 0) {
                 queue.add("buzz");
@@ -34,12 +42,18 @@ public class FizzBuzz {
             }
             else
             {
-                wait();
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void fizzbuzz() throws InterruptedException {
+    public synchronized void fizzbuzz() {
         for (int num : numbers) {
             if (num % 3 == 0 && num % 5 == 0) {
                 queue.add("fizzbuzz");
@@ -47,26 +61,45 @@ public class FizzBuzz {
             }
             else
             {
-                wait();
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void number() throws InterruptedException {
+    public synchronized void number()  {
         for (int num : numbers) {
             if (num % 3 != 0 && num % 5 != 0) {
                 queue.add(String.valueOf(num));
+                System.out.println("test num");
                 notifyAll();
             }
             else {
-                wait();
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void printResults() {
-        for (int i = 0; i < numbers.size(); i++) {
-            System.out.println(queue.poll());
+    public synchronized void printResults() {
+        int counter =0;
+        while (coun)
+        {
+            if (queue!=null)
+            {
+                System.out.println(queue.poll());
+                counter++;
+            }
         }
     }
 
@@ -81,13 +114,7 @@ public class FizzBuzz {
         Thread threadA = new Thread(fizzBuzz::fizz);
         Thread threadB = new Thread(fizzBuzz::buzz);
         Thread threadC = new Thread(fizzBuzz::fizzbuzz);
-        Thread threadD = new Thread(()-> {
-            try {
-                fizzBuzz.number();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        Thread threadD = new Thread(()-> fizzBuzz.number());
         Thread threadOutput = new Thread(fizzBuzz::printResults);
 
         threadA.start();
